@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      li {
+        padding: 10px;
+        border-radius: 2px;
+        margin-bottom: 10px;
+      }
+      .expensive {
+        background-color: rgb(228, 113, 113);
+      }
+      .affordable {
+        background-color: rgb(132, 253, 132);
+      }
+    </style>
+  </head>
+  <body>
+    <form class="user-input-form">
+      <label for="product-name">Product Name</label>
+      <input type="text" id="product-name" name="product-name" required />
+      <label for="product-value">Product Value</label>
+      <input
+        type="number"
+        min="0"
+        name="product-value"
+        id="product-value"
+        required
+      />
+      <button type="submit" class="btn-submit">Add Product</button>
+    </form>
+    <ul class="product-list"></ul>
+
+    <script>
+      // selecting elements
+      const form = document.querySelector(".user-input-form");
+      const inputProductName = document.querySelector("#product-name");
+      const inputProductValue = document.querySelector("#product-value");
+
+      // for sorting the ul
+      const sortList = function (ul) {
+        // cloning the currently showing ul
+        const new_ul = ul.cloneNode(false);
+
+        // spreading the list items of the current ul
+        const lis = [...ul.childNodes];
+
+        console.log(lis[0].childNodes[2].innerText);
+
+        // Sort the lis in ascending order
+        lis.sort(function (a, b) {
+          return (
+            // childNodes[2] points to span tag in the list item where the value is
+            +a.childNodes[2].innerText - +b.childNodes[2].innerText // that + for changing string to number
+          );
+        });
+
+        // Add them into the ul in order
+        lis.forEach((li) => {
+          // checking if the have affordable class and removing it if the do
+          if (li.classList.contains("affordable"))
+            li.classList.remove("affordable");
+          if (li.classList.contains("expensive"))
+            li.classList.remove("expensive");
+
+          // appending the li to the new ul
+          new_ul.appendChild(li);
+        });
+
+        // replacing the old list with the new sorted list
+        ul.parentNode.replaceChild(new_ul, ul);
+
+        // highlighting the first list item
+        new_ul.firstChild.classList.add("affordable");
+
+        // if the list has more than one item then it'll add the expensive class to the last item
+        if (new_ul.childNodes.length > 1)
+          new_ul.lastChild.classList.add("expensive");
+      };
+
+      //adding the submit event listener to the form
+      form.addEventListener("submit", function (e) {
+        const productList = document.querySelector(".product-list");
+        // preventing the default behaviour of the form(page reload)
+        e.preventDefault();
+        // getting the value the user typed
+        const productName = inputProductName.value;
+        const productValue = +inputProductValue.value; // that + is for making the value to number, since .value return the value as a string, we have to convert it to number first
+
+        // inserting the list item to the product list
+        productList.insertAdjacentHTML(
+          "afterbegin", // specifying where the list item should be added, after the ul begins
+          `<li><span>${productName}</span> - <span>${productValue}</span>$</li>`
+        );
+        sortList(productList);
+      });
+    </script>
+  </body>
+</html>
